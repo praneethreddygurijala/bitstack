@@ -161,3 +161,18 @@ uv.lock
 # Do not ignore documentation or code files
 !README.md
 !*.py 
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.*
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.vite/
+package-lock.json
