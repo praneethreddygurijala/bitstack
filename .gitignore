@@ -176,3 +176,7 @@ yarn-error.log*
 pnpm-debug.log*
 .vite/
 package-lock.json
+CLAUDE_PROMPT.md
+scratch.js
+scratch_debug.js
+test_serp.js
