@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bot, MapPin, Clock, IndianRupee, Smile, Heart, AlertCircle, CheckCircle2, Loader2, Trophy, Wallet, Navigation, Sparkles, Star, Calendar, CloudSun, Phone, Image } from 'lucide-react';
+import { Bot, MapPin, Clock, IndianRupee, CheckCircle2, Loader2, Trophy, Navigation, Sparkles, Star, Calendar, CloudSun, Image } from 'lucide-react';
 import { runPlannerAgent, type AgentTrace } from './Agent';
 
 function App() {

@@ -125,9 +125,6 @@ export async function runPlannerAgent(input: any, onTrace: (trace: AgentTrace) =
     // Combine mood with interests to create search categories
     // e.g. mood="fun" interests=["movies","music","walks"] → search targets
     const allSearchTargets = [...interests];
-    // If mood is a concrete thing (not just an emotion), add it too
-    const emotionWords = ['happy', 'sad', 'tired', 'excited', 'bored', 'chill', 'relaxed', 'fun', 'energetic', 'lazy', 'adventurous'];
-    const moodIsEmotion = emotionWords.some(e => mood.toLowerCase().includes(e));
 
     const wantsFood = allSearchTargets.some(i => /food|dining|lunch|dinner|restaurant|cafe|eat|drink/i.test(i));
 
