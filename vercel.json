@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/api/search-provider/:path*",
-      "destination": "https://serpapi.com/:path*"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

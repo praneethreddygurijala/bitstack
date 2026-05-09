@@ -7,19 +7,15 @@ export type AgentTrace = {
 // ────────────────────────────────────────────────────────────────────
 // Helper: Search Google Local via SerpAPI for a single query
 // ────────────────────────────────────────────────────────────────────
-async function searchGoogleLocal(query: string, apiKey: string): Promise<any[]> {
-  if (!apiKey) {
-    throw new Error("SerpAPI Key is missing. Please check your environment variables (VITE_SERPAPI_KEY).");
-  }
-
-  const url = `/api/search-provider/search.json?engine=google_local&q=${encodeURIComponent(query)}&api_key=${apiKey}`;
+async function searchGoogleLocal(query: string): Promise<any[]> {
+  const url = `/api/search?engine=google_local&q=${encodeURIComponent(query)}`;
   
   try {
     const res = await fetch(url);
     if (!res.ok) {
-      const text = await res.text();
-      console.error(`Search error (${res.status}):`, text);
-      throw new Error(`Search provider returned ${res.status}: ${text.slice(0, 50)}...`);
+      const data = await res.json();
+      console.error(`Search error (${res.status}):`, data);
+      throw new Error(data.error || `Search provider returned ${res.status}`);
     }
     const data = await res.json();
     return data.local_results || [];
@@ -77,7 +73,6 @@ function buildSearchQuery(interest: string, city: string, dietaryConstraint: str
 // ────────────────────────────────────────────────────────────────────
 export async function runPlannerAgent(input: any, onTrace: (trace: AgentTrace) => void) {
   try {
-    const API_KEY = import.meta.env.VITE_SERPAPI_KEY;
 
     // ═══════════════════════════════════════════════════════════════
     // TOOL 1: parseUserPreferences
@@ -171,7 +166,7 @@ export async function runPlannerAgent(input: any, onTrace: (trace: AgentTrace) =
 
       onTrace({ tool: 'searchPerInterest', message: `Searching for "${interest}" → query: "${query}"...`, type: 'info' });
 
-      const results = await searchGoogleLocal(query, API_KEY);
+      const results = await searchGoogleLocal(query);
 
       // Take top 5 per interest to keep things manageable
       const top = results.slice(0, 5);
@@ -215,7 +210,7 @@ export async function runPlannerAgent(input: any, onTrace: (trace: AgentTrace) =
       const foodQuery = `${dietaryConstraint || 'best'} ${quietModifier} restaurants in ${city}`.replace(/\s+/g, ' ').trim();
       onTrace({ tool: 'getFoodOptions', message: `No food interests specified. Searching: "${foodQuery}"...`, type: 'info' });
 
-      const foodResults = await searchGoogleLocal(foodQuery, API_KEY);
+      const foodResults = await searchGoogleLocal(foodQuery);
       for (let idx = 0; idx < Math.min(foodResults.length, 10); idx++) {
         const e = foodResults[idx];
         allFoodOptions.push({
@@ -241,7 +236,7 @@ export async function runPlannerAgent(input: any, onTrace: (trace: AgentTrace) =
       const actQuery = `${mood} ${quietModifier} places to visit in ${city}`.replace(/\s+/g, ' ').trim();
       onTrace({ tool: 'getActivityOptions', message: `No activity interests found. Searching: "${actQuery}"...`, type: 'info' });
 
-      const actResults = await searchGoogleLocal(actQuery, API_KEY);
+      const actResults = await searchGoogleLocal(actQuery);
       for (let idx = 0; idx < Math.min(actResults.length, 10); idx++) {
         const e = actResults[idx];
         allActivities.push({
