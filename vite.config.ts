@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       proxy: {
-        '/api/search': {
+        '/api/discover': {
           target: 'https://serpapi.com',
           changeOrigin: true,
           rewrite: (path) => {

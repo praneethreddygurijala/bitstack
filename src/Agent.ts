@@ -8,7 +8,7 @@ export type AgentTrace = {
 // Helper: Search Google Local via SerpAPI for a single query
 // ────────────────────────────────────────────────────────────────────
 async function searchGoogleLocal(query: string): Promise<any[]> {
-  const url = `/api/search?engine=google_local&q=${encodeURIComponent(query)}`;
+  const url = `/api/discover?engine=google_local&q=${encodeURIComponent(query)}`;
   
   try {
     const res = await fetch(url);

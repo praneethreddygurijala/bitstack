@@ -1,6 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   const { q, engine } = req.query;
   const apiKey = process.env.SERPAPI_KEY;
 
@@ -13,18 +11,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const searchEngine = engine || 'google_local';
-  const url = `https://serpapi.com/search.json?engine=${searchEngine}&q=${encodeURIComponent(q as string)}&api_key=${apiKey}`;
+  const url = `https://serpapi.com/search.json?engine=${encodeURIComponent(searchEngine)}&q=${encodeURIComponent(q)}&api_key=${apiKey}`;
 
   try {
     const response = await fetch(url);
     const data = await response.json();
+
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 's-maxage=300');
 
     if (!response.ok) {
       return res.status(response.status).json(data);
     }
 
     return res.status(200).json(data);
-  } catch (error: any) {
-    return res.status(500).json({ error: 'Failed to fetch from SerpAPI', details: error.message });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to fetch results', details: error.message });
   }
 }
