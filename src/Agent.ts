@@ -8,10 +8,28 @@ export type AgentTrace = {
 // Helper: Search Google Local via SerpAPI for a single query
 // ────────────────────────────────────────────────────────────────────
 async function searchGoogleLocal(query: string, apiKey: string): Promise<any[]> {
-  const url = `/api/serp/search.json?engine=google_local&q=${encodeURIComponent(query)}&api_key=${apiKey}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data.local_results || [];
+  if (!apiKey) {
+    throw new Error("SerpAPI Key is missing. Please check your environment variables (VITE_SERPAPI_KEY).");
+  }
+
+  const url = `/api/search-provider/search.json?engine=google_local&q=${encodeURIComponent(query)}&api_key=${apiKey}`;
+  
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(`Search error (${res.status}):`, text);
+      throw new Error(`Search provider returned ${res.status}: ${text.slice(0, 50)}...`);
+    }
+    const data = await res.json();
+    return data.local_results || [];
+  } catch (err: any) {
+    console.error("Fetch error for Search Provider:", err);
+    if (err.message === 'Failed to fetch') {
+      throw new Error("Connection blocked. Please disable any adblockers or check your network connection.");
+    }
+    throw err;
+  }
 }
 
 // ────────────────────────────────────────────────────────────────────
@@ -513,7 +531,7 @@ export async function runPlannerAgent(input: any, onTrace: (trace: AgentTrace) =
       }
     };
   } catch (err: any) {
-    onTrace({ tool: 'system', message: `Failed: ${err.message}`, type: 'error' });
-    throw err;
+    onTrace({ tool: 'system', message: `Fatal Planning Error: ${err.message}`, type: 'error' });
+    throw new Error(`Planning failed: ${err.message}`);
   }
 }

@@ -6,10 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api/serp': {
+      '/api/search-provider': {
         target: 'https://serpapi.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/serp/, '')
+        rewrite: (path) => path.replace(/^\/api\/search-provider/, '')
       }
     }
   }

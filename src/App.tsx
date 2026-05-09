@@ -26,16 +26,22 @@ function App() {
     setFinalPlan(null);
     setActivePlan('budget');
 
-    const plan = await runPlannerAgent({
-      ...formData,
-      interests: formData.interests.split(',').map(i => i.trim()),
-      constraints: formData.constraints.split(',').map(c => c.trim())
-    }, (trace) => {
-      setTraces(prev => [...prev, trace]);
-    });
+    try {
+      const plan = await runPlannerAgent({
+        ...formData,
+        interests: formData.interests.split(',').map(i => i.trim()),
+        constraints: formData.constraints.split(',').map(c => c.trim())
+      }, (trace) => {
+        setTraces(prev => [...prev, trace]);
+      });
 
-    setFinalPlan(plan);
-    setIsPlanning(false);
+      setFinalPlan(plan);
+    } catch (err: any) {
+      console.error("Planning failed:", err);
+      // The error is already traced by the agent, so we just stop the loading state here
+    } finally {
+      setIsPlanning(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
